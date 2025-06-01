@@ -63,16 +63,19 @@
 
         <div class="lg:w-2/3 flex flex-col items-center justify-start">
             <h2 class="text-2xl font-semibold mb-6 text-blue-600 text-center lg:text-left">Aperçu de la Carte</h2>
+            <div id="cardPreview" class="relative w-[400px] h-[235px] overflow-hidden rounded-lg shadow-2xl font-sans transition-all duration-300 ease-in-out transform hover:scale-105">
 
-            <div id="cardPreview"
-                 class="text-white p-0 rounded-lg shadow-2xl font-sans transition-all duration-300 ease-in-out transform hover:scale-105">
-                <div class="absolute top-[95px] left-[12px] text-overlay">
-                    <h2 id="previewNomComplet" class="text-2xl font-medium uppercase tracking-tight">NOM COMPLET</h2>
-                    <p id="previewFonction" class="text-3g font-light uppercase tracking-wider mt-0">FONCTION</p>
+    <!-- Image d’arrière-plan -->
+                <img src="carte_background.png" alt="Fond de carte" class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none">
+
+    <!-- Contenu de la carte -->
+                <div class="absolute top-[95px] left-[12px] z-10">
+                    <h2 id="previewNomComplet" class="text-2xl font-medium uppercase tracking-tight text-white">NOM COMPLET</h2>
+                    <p id="previewFonction" class="text-3g font-light uppercase tracking-wider mt-0 text-white">FONCTION</p>
                 </div>
-                <div id="preview-qrcode"
-                     class="absolute bottom-[22px] right-[50px] w-[40px] h-[40px] flex items-center justify-center overflow-hidden">
-                    <span class="text-xs text-gray-400">QR</span>
+
+                <div id="preview-qrcode" class="absolute bottom-[22px] right-[50px] w-[40px] h-[40px] flex items-center justify-center overflow-hidden z-10">
+                    <span class="text-xs text-gray-200">QR</span>
                 </div>
             </div>
 
@@ -138,7 +141,7 @@
 
         // Laisse le QR code se générer avant la capture
         setTimeout(async () => {
-            const canvas = await html2canvas(card, { scale: 3, useCORS: true });
+            const canvas = await html2canvas(card, { scale: 4, useCORS: true });
             const imgData = canvas.toDataURL('image/png');
 
             const { jsPDF } = window.jspdf;
