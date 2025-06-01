@@ -9,19 +9,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body class="bg-gray-100 p-8">
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-6">
 
-  <header class="mb-8 text-center">
+  <!-- Titre -->
+  <header class="mb-6 text-center">
     <h1 class="text-3xl md:text-4xl font-bold" style="color: #040d6f;">Générateur de Carte Membre</h1>
     <p class="text-sm mt-1" style="color: #040d6f;">Cellule de l'Audiovisuel, de la Gestion et de la Communication</p>
   </header>
-  <div class="mb-6">
-    <input id="nom" type="text" placeholder="Nom complet" class="border p-2 rounded mr-2">
-    <input id="fonction" type="text" placeholder="Fonction" class="border p-2 rounded mr-2">
-    <input id="lien" type="url" placeholder="Lien QR Code" class="border p-2 rounded mr-2">
-    <button id="downloadBtn" class="mt-6 px-4 py-2 text-white rounded-lg transition" style="background-color: #040d6f;">Télécharger la carte en PDF</button>
+
+  <!-- Formulaire + bouton -->
+  <div class="mb-8 flex flex-col sm:flex-row items-center gap-3 flex-wrap justify-center">
+    <input id="nom" type="text" placeholder="Nom complet" class="border p-2 rounded w-64" />
+    <input id="fonction" type="text" placeholder="Fonction" class="border p-2 rounded w-64" />
+    <input id="lien" type="url" placeholder="Lien QR Code" class="border p-2 rounded w-64" />
+    <button id="downloadBtn" class="px-4 py-2 text-white rounded-lg transition hover:brightness-110" style="background-color: #040d6f;">
+      Télécharger la carte en PDF
+    </button>
   </div>
 
+  <!-- Aperçu de la carte -->
   <div id="cardPreview" class="relative w-[400px] h-[235px] rounded-lg shadow-xl overflow-hidden">
     <!-- Image d’arrière-plan -->
     <img id="bgImage" src="carte_background.png" alt="Fond" class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none" crossorigin="anonymous" />
@@ -71,7 +77,6 @@
 
     document.getElementById('downloadBtn').addEventListener('click', async () => {
       const card = document.getElementById('cardPreview');
-
       const canvas = await html2canvas(card, {
         scale: 4,
         useCORS: true,
@@ -90,7 +95,6 @@
       pdf.save('Carte_Membre.pdf');
     });
 
-    // Mise à jour initiale
     updateCard();
   </script>
 </body>
