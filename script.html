@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Carte Membre</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        #preview-qrcode canvas,
+        #preview-qrcode img {
+            margin: auto;
+        }
+
+        #cardPreview {
+            background-image: url('carte_background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 400px;
+            height: 235px;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<div class="container mx-auto p-4 sm:p-6 md:p-8">
+    <header class="mb-8 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-blue-700">Générateur de Carte Membre</h1>
+        <p class="text-gray-600">Cellule de l'Audiovisuel, de la Gestion et de la Communication</p>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <div class="lg:w-1/3 bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-2xl font-semibold mb-6 text-blue-600">Informations</h2>
+            <form id="cardForm" class="space-y-6">
+                <div>
+                    <label for="nomComplet" class="block text-sm font-medium text-gray-700 mb-1">Nom Complet :</label>
+                    <input type="text" id="nomComplet" name="nomComplet" placeholder="Ex: Jean Dupont"
+                           class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="fonction" class="block text-sm font-medium text-gray-700 mb-1">Fonction :</label>
+                    <input type="text" id="fonction" name="fonction" placeholder="Ex: Président du BDE"
+                           class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="lienQrCode" class="block text-sm font-medium text-gray-700 mb-1">Lien pour QR Code :</label>
+                    <input type="url" id="lienQrCode" name="lienQrCode" placeholder="Ex: https://www.example.com"
+                           class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+            </form>
+        </div>
+
+        <div class="lg:w-2/3 flex flex-col items-center justify-start">
+            <h2 class="text-2xl font-semibold mb-6 text-blue-600 text-center lg:text-left">Aperçu de la Carte</h2>
+
+            <div id="cardPreview"
+                 class="text-white p-0 rounded-lg shadow-2xl font-sans transition-all duration-300 ease-in-out transform hover:scale-105">
+                <div class="absolute top-[95px] left-[12px] text-overlay">
+                    <h2 id="previewNomComplet" class="text-2xl font-medium uppercase tracking-tight">NOM COMPLET</h2>
+                    <p id="previewFonction" class="text-3g font-light uppercase tracking-wider mt-0">FONCTION</p>
+                </div>
+                <div id="preview-qrcode"
+                     class="absolute bottom-[22px] right-[50px] w-[40px] h-[40px] flex items-center justify-center overflow-hidden">
+                    <span class="text-xs text-gray-400">QR</span>
+                </div>
+            </div>
+
+            <!-- Bouton hors de la carte -->
+            <button id="downloadBtn"
+                    class="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                Télécharger la carte en PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const inputNomComplet = document.getElementById('nomComplet');
+    const inputFonction = document.getElementById('fonction');
+    const inputLienQrCode = document.getElementById('lienQrCode');
+    const previewNomComplet = document.getElementById('previewNomComplet');
+    const previewFonction = document.getElementById('previewFonction');
+    const qrCodeContainer = document.getElementById('preview-qrcode');
+
+    let qrCodeInstance = null;
+
+    function generateQRCode(link) {
+        qrCodeContainer.innerHTML = '';
+
+        if (link) {
+            if (typeof QRCode !== 'undefined') {
+                qrCodeInstance = new QRCode(qrCodeContainer, {
+                    text: link,
+                    width: 60,
+                    height: 60,
+                    colorDark: "#FFFFFF",
+                    colorLight: "#040d6f",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } else {
+                console.error("Librairie QRCode non chargée.");
+                qrCodeContainer.innerHTML = '<span class="text-red-500 text-xs">Erreur QR</span>';
+            }
+        } else {
+            qrCodeContainer.innerHTML = '<span class="text-xs text-gray-200 flex items-center justify-center h-full">QR</span>';
+        }
+    }
+
+    function updatePreview() {
+        const nom = inputNomComplet.value.trim();
+        const fonction = inputFonction.value.trim();
+        const lien = inputLienQrCode.value.trim();
+
+        previewNomComplet.textContent = nom ? nom.toUpperCase() : 'NOM COMPLET';
+        previewFonction.textContent = fonction ? fonction.toUpperCase() : 'FONCTION';
+        generateQRCode(lien);
+    }
+
+    inputNomComplet.addEventListener('input', updatePreview);
+    inputFonction.addEventListener('input', updatePreview);
+    inputLienQrCode.addEventListener('input', updatePreview);
+
+    updatePreview();
+
+    document.getElementById('downloadBtn').addEventListener('click', async () => {
+        const card = document.getElementById('cardPreview');
+
+        // Laisse le QR code se générer avant la capture
+        setTimeout(async () => {
+            const canvas = await html2canvas(card, { scale: 3, useCORS: true });
+            const imgData = canvas.toDataURL('image/png');
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: [400, 235]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, 400, 235);
+            pdf.save('Carte_Membre_BDE.pdf');
+        }, 300); // petit délai pour être sûr que le QR code est chargé
+    });
+</script>
+
+</body>
+</html>
